@@ -1,6 +1,11 @@
 # Copyright (c) 2024 Nordic Semiconductor ASA
 # SPDX-License-Identifier: Apache-2.0
 
+config RISCV_CORE_USE_54X_MLTPAN18
+	bool "Apply MLPAN18 for NRF54Hx and NRFLx series"
+	depends on SOC_SERIES_NRF54HX | SOC_SERIES_NRF54LX
+	default y
+
 config RISCV_CORE_NORDIC_VPR
 	bool
 	select ATOMIC_OPERATIONS_C

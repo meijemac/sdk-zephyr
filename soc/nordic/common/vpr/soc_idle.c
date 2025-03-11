@@ -17,6 +17,10 @@ void arch_cpu_idle(void)
 	barrier_dsync_fence_full();
 	irq_unlock(MSTATUS_IEN);
 	__asm__ volatile("wfi");
+
+#ifdef CONFIG_RISCV_CORE_USE_54X_MLTPAN18
+	nrf_vpr_cpurun_set(NRF_VPR, true);
+#endif
 }
 
 void arch_cpu_atomic_idle(unsigned int key)
@@ -31,4 +35,8 @@ void arch_cpu_atomic_idle(unsigned int key)
 			  :
 			  : "r" (~key & MSTATUS_IEN)
 			  : "memory");
+
+#ifdef CONFIG_RISCV_CORE_USE_54X_MLTPAN18
+	nrf_vpr_cpurun_set(NRF_VPR, true);
+#endif
 }
