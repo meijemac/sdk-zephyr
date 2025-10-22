@@ -66,35 +66,90 @@ static void common_resume(void)
 	soc_lrcconf_poweron_request(&soc_node, NRF_LRCCONF_POWER_DOMAIN_0);
 }
 
-void nrf_poweroff(void)
+static void nrf_radio_poweroff(void)
 {
-	nrf_resetinfo_resetreas_local_set(NRF_RESETINFO, 0);
-	nrf_resetinfo_restore_valid_set(NRF_RESETINFO, false);
-
-#if defined(CONFIG_SOC_NRF54H20_CPURAD)
 	nrf_lrcconf_retain_set(NRF_LRCCONF010,
 			NRF_LRCCONF_POWER_DOMAIN_0 | NRF_LRCCONF_POWER_DOMAIN_1, false);
 	nrf_lrcconf_poweron_force_set(NRF_LRCCONF010,
 			NRF_LRCCONF_POWER_DOMAIN_0 | NRF_LRCCONF_POWER_DOMAIN_1, false);
-#else
-	/* Disable retention */
-	nrf_lrcconf_retain_set(NRF_LRCCONF010, NRF_LRCCONF_POWER_MAIN, false);
-	nrf_lrcconf_retain_set(NRF_LRCCONF010, NRF_LRCCONF_POWER_DOMAIN_0, false);
-#endif
+
 	common_suspend();
 
 	/* Disable all owned compare channels except the one used for wakeup from system-off. */
 	z_nrf_grtc_timer_disable_owned_cc_channels(z_nrf_grtc_timer_wakeup_channel_get());
 
 	/* Indicate that we are ready for system off. */
-	nrf_lrcconf_task_trigger(NRF_LRCCONF010, NRF_LRCCONF_TASK_SYSTEMOFFREADY);
+	//nrf_lrcconf_task_trigger(NRF_LRCCONF010, NRF_LRCCONF_TASK_SYSTEMOFFREADY);
 
 	__set_BASEPRI(0);
 	__ISB();
 	__DSB();
 	__WFI();
 
-	CODE_UNREACHABLE;
+}
+
+static void nrf_app_poweroff_finalize(void)
+{	
+	/* Indicate that we are ready for system off. */
+	nrf_lrcconf_task_trigger(NRF_LRCCONF010, NRF_LRCCONF_TASK_SYSTEMOFFREADY);
+	/* Set intormation which is used on domain wakeup to determine if resume from RAM shall
+	 * be performed.
+	 */
+	nrf_resetinfo_resetreas_local_set(NRF_RESETINFO,
+					  NRF_RESETINFO_RESETREAS_LOCAL_UNRETAINED_MASK);
+	nrf_resetinfo_restore_valid_set(NRF_RESETINFO, true);
+
+#if !defined(CONFIG_SOC_NRF54H20_CPURAD)
+	/* Disable retention */
+	nrf_lrcconf_retain_set(NRF_LRCCONF010, NRF_LRCCONF_POWER_DOMAIN_0, false);
+#endif
+	common_suspend();
+
+
+	__set_BASEPRI(0);
+	__ISB();
+	__DSB();
+	__WFI();
+
+	while(1) { __ASM("NOP"); }
+	nrf_lrcconf_task_trigger(NRF_LRCCONF010, NRF_LRCCONF_TASK_SYSTEMOFFNOTREADY);
+}
+
+static void nrf_app_poweroff(void)
+{
+	/* Disable retention */
+	nrf_lrcconf_retain_set(NRF_LRCCONF010, NRF_LRCCONF_POWER_MAIN, false);
+	nrf_lrcconf_retain_set(NRF_LRCCONF010, NRF_LRCCONF_POWER_DOMAIN_0, false);
+
+	common_suspend();
+
+	/* Disable all owned compare channels except the one used for wakeup from system-off. */
+	z_nrf_grtc_timer_disable_owned_cc_channels(z_nrf_grtc_timer_wakeup_channel_get());
+
+
+	if(soc_s2ram_suspend(nrf_app_poweroff_finalize))
+	{
+		while(1) { __ASM("NOP"); }
+
+		common_suspend();
+
+		/* Disable retention */
+		nrf_lrcconf_retain_set(NRF_LRCCONF010, NRF_LRCCONF_POWER_MAIN, true);
+		nrf_lrcconf_retain_set(NRF_LRCCONF010, NRF_LRCCONF_POWER_DOMAIN_0, true);
+
+	}
+}
+
+void nrf_poweroff(void)
+{
+	nrf_resetinfo_resetreas_local_set(NRF_RESETINFO, 0);
+	nrf_resetinfo_restore_valid_set(NRF_RESETINFO, false);
+
+#if defined(CONFIG_SOC_NRF54H20_CPURAD)
+	nrf_radio_poweroff();
+#else
+	nrf_app_poweroff();
+#endif
 }
 
 static void s2idle_enter(uint8_t substate_id)

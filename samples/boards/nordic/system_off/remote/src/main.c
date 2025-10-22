@@ -18,7 +18,11 @@ int main(void)
 		printf("%s system off demo. Ready for system off.\n", CONFIG_BOARD);
 	}
 
-	sys_poweroff();
+	while (1) {
+		k_sleep(K_FOREVER);
+	};
+
+	//sys_poweroff();
 
 	return 0;
 }
