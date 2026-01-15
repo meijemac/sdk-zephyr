@@ -216,7 +216,7 @@ if(DEFINED tampc_path)
   endif()
 endif()
 
-if(CONFIG_SOC_NRF54L_CPUAPP_COMMON)
+if(CONFIG_SOC_NRF54L_CPUAPP_COMMON OR CONFIG_SOC_NRF55XX_CPUAPP_COMMON)
 	# Ideally, hfpll should taken as a phandle from clocks property from cpu but it
 	# seems that there is no such option in DT cmake functions. Assuming that nrf54l
 	# is using hfpll as CPU clock source (true for all existing devices).
