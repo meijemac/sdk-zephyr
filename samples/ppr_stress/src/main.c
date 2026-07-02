@@ -19,7 +19,7 @@ const struct device *timer1 = DEVICE_DT_GET(DT_NODELABEL(dut));
 struct counter_alarm_cfg alarm_cfg1;
 struct counter_alarm_cfg alarm_cfg2;
 
-#define DBG_PINS 1
+#define DBG_PINS 0
 
 #define PIN1 0
 #define PIN2 1
