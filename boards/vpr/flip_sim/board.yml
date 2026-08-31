@@ -1,0 +1,9 @@
+board:
+  name: flip_sim
+  full_name: FLIP SystemC Simulator FLPR
+  vendor: vpr
+  socs:
+    - name: nrf54l15
+      variants:
+        - name: cpuflpr
+          cpucluster: cpuflpr

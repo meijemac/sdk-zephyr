@@ -1,0 +1,5 @@
+# Copyright (c) 2026 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_FLIP_SIM
+	select SOC_NRF54L15_CPUFLPR if BOARD_FLIP_SIM_NRF54L15_CPUFLPR

@@ -1,0 +1,11 @@
+# Copyright (c) 2026 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+CONFIG_USE_DT_CODE_PARTITION=y
+
+# Execute FLPR firmware from SRAM (matches FLIP default.yaml load model).
+CONFIG_XIP=n
+
+# Start GRTC SYSCOUNTER on driver init (required for k_sleep on FLPR).
+# Without this, nrfx never issues TASKS_START and the counter stays frozen.
+CONFIG_NRF_GRTC_START_SYSCOUNTER=y

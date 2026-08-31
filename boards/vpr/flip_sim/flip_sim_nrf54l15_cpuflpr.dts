@@ -1,0 +1,52 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * FLIP SystemC simulator target for the nRF54L15 FLPR (RISC-V).
+ * Code is linked to run from 0x30008000 to match FLIP default.yaml (vpr.startpc).
+ */
+
+/dts-v1/;
+#include <vendor/nordic/nrf54l15_cpuflpr.dtsi>
+
+/ {
+	model = "FLIP SystemC Simulator nRF54L15 FLPR";
+	compatible = "vpr,flip-sim-nrf54l15-cpuflpr";
+
+	chosen {
+		zephyr,code-partition = &cpuflpr_code_partition;
+		zephyr,flash = &cpuflpr_rram;
+		zephyr,sram = &cpuflpr_sram;
+	};
+};
+
+&cpuflpr_sram {
+	/* FLIP VPR reset / entry address (see flip/default.yaml). */
+	reg = <0x30008000 DT_SIZE_K(128)>;
+	ranges = <0x0 0x30008000 DT_SIZE_K(128)>;
+};
+
+&cpuflpr_rram {
+	partitions {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		cpuflpr_code_partition: partition@0 {
+			compatible = "zephyr,mapped-partition";
+			label = "image-0";
+			reg = <0x0 DT_SIZE_K(96)>;
+		};
+	};
+};
+
+&cpuflpr_clic {
+	status = "okay";
+};
+
+&grtc {
+	owned-channels = <3 4>;
+	clock-frequency = <1000000>;
+	status = "okay";
+};
