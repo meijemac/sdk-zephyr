@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * hello_world overlay for flip_sim/nrf54l15/cpuflpr (FLIP SystemC simulator).
+ *
+ * GRTC @ 0x400E2000 (NS) — kernel system clock / tick source in FLIP.
+ * Console output uses the FLIP _sim_printk hook (startpc+0xA0), not UARTE.
+ */
+
+&grtc {
+	/* Reserved for FLPR system counter (see nrf54l15dk cpuflpr). */
+	owned-channels = <3 4>;
+	clock-frequency = <1000000>;
+	status = "okay";
+};
