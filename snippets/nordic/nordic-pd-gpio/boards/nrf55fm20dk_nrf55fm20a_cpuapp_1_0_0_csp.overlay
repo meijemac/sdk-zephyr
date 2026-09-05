@@ -1,0 +1,19 @@
+/ {
+    pd_gpio_monitor {
+        compatible = "company,pd-gpio-monitor"; /* Custom compatible string */
+
+        /* 2. Define your individual child pins */
+        pd_select1_label: pd_gpio_pd_select1 {
+            gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+        };
+
+        pd_select2_label: pd_gpio_pd_select2 {
+            gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+        };
+    };
+
+    aliases {
+        pdgpio1 = &pd_select1_label;
+        pdgpio2 = &pd_select2_label;
+    };
+};
