@@ -1,0 +1,5 @@
+name: nordic-pd-gpio
+description: Configures the PD SELECT pins to be used to monitor the power domains
+append:
+  EXTRA_CONF_FILE: prj.conf
+  EXTRA_DTC_OVERLAY_FILE: boards/nrf55fm20dk_nrf55fm20a_cpuapp_0_1_0_qfn.overlay

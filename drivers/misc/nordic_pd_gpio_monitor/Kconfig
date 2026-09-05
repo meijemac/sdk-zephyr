@@ -1,0 +1,29 @@
+# Copyright (c) 2024 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+config NORDIC_PD_GPIO_MONITOR
+	bool "Nordic Power Domain GPIO Monitor"
+	default n
+	depends on SOC_NRF54L05 || SOC_NRF54L10 || SOC_NRF54L15 || SOC_NRF55L20 || SOC_NRF55FM20A
+	help
+	  When enabled, the power domain gpio monitor will be enabled. 
+
+if NORDIC_PD_GPIO_MONITOR
+
+module = NORDIC_PD_GPIO_MONITOR
+module-str = Nordic PD Monitor
+source "subsys/logging/Kconfig.template.log_config"
+
+config NORDIC_PD_GPIO_MONITOR_PD_SELECT1
+	int "Nordic PD GPIO Monitor for Select Register 1"
+	default 0
+	help
+		The value of the PD Select Register 1.
+
+config NORDIC_PD_GPIO_MONITOR_PD_SELECT2
+	int "Nordic PD GPIO Monitor for Select Register 2"
+	default 0
+	help
+		The value of the PD Select Register 2
+
+endif # NORDIC_PD_GPIO_MONITOR
